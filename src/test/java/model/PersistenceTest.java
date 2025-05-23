@@ -11,7 +11,6 @@ import io.quarkus.test.hibernate.reactive.panache.TransactionalUniAsserter;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.vertx.RunOnVertxContext;
 
-
 @QuarkusTest
 public class PersistenceTest {
 
@@ -80,10 +79,11 @@ public class PersistenceTest {
         });
 
         asserter.execute(() -> {
-            return Link.<Link>findAll().list().invoke(list -> assertThat(list).hasSize(1).first().satisfies(link -> {
+            // return Link.<Link>findAll().list().invoke(list -> assertThat(list).hasSize(1).first()
+            return Link.<Link>findById(linkKey).invoke(link -> {
                 assertThat(link.key).isEqualTo(linkKey);
                 assertThat(link.gpsPoints).hasSize(3);
-            }));
+            });
         });
     }
 

@@ -6,6 +6,7 @@ import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 
 @Entity
@@ -14,7 +15,7 @@ public class Link extends PanacheEntityBase {
     @EmbeddedId
     public LinkKey key;
 
-    @OneToMany(mappedBy = "link", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "link", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     public List<GPSPoint> gpsPoints;
 
 }
