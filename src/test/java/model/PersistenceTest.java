@@ -4,12 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import org.hibernate.Transaction;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.hibernate.reactive.panache.TransactionalUniAsserter;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.vertx.RunOnVertxContext;
+
 
 @QuarkusTest
 public class PersistenceTest {
@@ -43,9 +45,7 @@ public class PersistenceTest {
         np.operatingDepartmentShortName = "123 - 123";
     }
 
-    @Test
-    @RunOnVertxContext
-    void testLinks(final TransactionalUniAsserter asserter) {
+    LinkKey same_setup(final TransactionalUniAsserter asserter) {
         var startKey = new NetPointKey(1, NetPointType.STOP_POINT);
         var endKey = new NetPointKey(2, NetPointType.STOP_POINT);
         var linkKey = new LinkKey(startKey, endKey, "123");
@@ -78,8 +78,28 @@ public class PersistenceTest {
             return link.persist();
         });
 
+        return linkKey;
+    }
+
+    @Test
+    @RunOnVertxContext
+    void testLinks_fails(final TransactionalUniAsserter asserter) {
+        var linkKey = same_setup(asserter);
+
         asserter.execute(() -> {
-            // return Link.<Link>findAll().list().invoke(list -> assertThat(list).hasSize(1).first()
+            return Link.<Link>findAll().list().invoke(list -> assertThat(list).hasSize(1).first().satisfies(link -> {
+                assertThat(link.key).isEqualTo(linkKey);
+                assertThat(link.gpsPoints).hasSize(3);
+            }));
+        });
+    }
+
+    @Test
+    @RunOnVertxContext
+    void testLinks_works(final TransactionalUniAsserter asserter) {
+        var linkKey = same_setup(asserter);
+
+        asserter.execute(() -> {
             return Link.<Link>findById(linkKey).invoke(link -> {
                 assertThat(link.key).isEqualTo(linkKey);
                 assertThat(link.gpsPoints).hasSize(3);
