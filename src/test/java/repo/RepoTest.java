@@ -1,4 +1,4 @@
-package model;
+package repo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,7 +10,9 @@ import io.quarkus.test.hibernate.reactive.panache.TransactionalUniAsserter;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.vertx.RunOnVertxContext;
 import jakarta.inject.Inject;
-import repo.NetPointRepo;
+import model.NetPoint;
+import model.NetPointKey;
+import model.NetPointType;
 
 @QuarkusTest
 public class RepoTest {
